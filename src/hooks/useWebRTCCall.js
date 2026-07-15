@@ -137,7 +137,7 @@ export const useWebRTCCall = (userId, isAdmin = false) => {
        const snap = await getDoc(doc(db, "users", receiverId));
         const receiverData = snap.data();
         console.log(`User Data by Faizan is ${receiverData}`)
-        console.log(`${receiverData}`)
+        console.log(receiverData)
       if (!isAdmin) {
         const snap = await getDoc(doc(db, "users", receiverId));
         const receiverData = snap.data();
