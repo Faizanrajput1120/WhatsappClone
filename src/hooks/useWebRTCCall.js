@@ -134,6 +134,9 @@ export const useWebRTCCall = (userId, isAdmin = false) => {
       // ENFORCE OUTBOUND CALL RESTRICTIONS:
       // - Admin can call anyone.
       // - Normal user can ONLY call Admins.
+       const snap = await getDoc(doc(db, "users", receiverId));
+        const receiverData = snap.data();
+        console.log(`User Data by Faizan is ${receiverData}`)
       if (!isAdmin) {
         const snap = await getDoc(doc(db, "users", receiverId));
         const receiverData = snap.data();
