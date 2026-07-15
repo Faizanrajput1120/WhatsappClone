@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function: Check if user is authenticated
+    function isAuth() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read: if isAuth();
+      allow write: if isAuth() && request.auth.uid == userId;
+    }
+
+    // 2. Messages collection (1-on-1 chats & rooms)
+    match /messages/{messageId} {
+      allow read, write: if isAuth();
+
+      // Subcollection where actual chat messages live
+      match /messages/{msgDoc} {
+        allow read, write: if isAuth();
+      }
+    }
+
+    // 3. Chats collection (user's active chats list)
+    // Allow any authenticated user to read/write so the sender can update
+    // the recipient's lastMessage preview (chat list last-message sync).
+    match /chats/{userId} {
+      allow read, write: if isAuth();
+    }
+
+    // 4. Rooms collection (group chats)
+    match /rooms/{roomId} {
+      allow read, write: if isAuth();
+
+      // Subcollection where room messages live
+      match /messages/{msgDoc} {
+        allow read, write: if isAuth();
+      }
+    }
+
+    // 5. Typing indicators
+    match /typing/{chatId} {
+      allow read, write: if isAuth();
+    }
+
+    // 6. Reports
+    match /reports/{reportId} {
+      allow create: if isAuth();
+      allow read: if false; // reports are admin-only to read
+    }
+
+    // 7. Status Updates collection
+    match /statusUpdates/{statusId} {
+      allow read, write: if isAuth();
+    }
+
+    // 8. WebRTC Calls signaling
+    match /calls/{callId} {
+      allow read, write: if isAuth();
+      
+      match /callerCandidates/{candidateId} {
+        allow read, write: if isAuth();
+      }
+      
+      match /calleeCandidates/{candidateId} {
+        allow read, write: if isAuth();
+      }
+    }
+
+    // 9. Theme & Wallpaper Preferences
+    match /userPreferences/{userId} {
+      allow read, write: if isAuth() && request.auth.uid == userId;
+    }
+
+    // 10. Communities
+    match /communities/{communityId} {
+      allow read, write: if isAuth();
+
+      match /channels/{channelId} {
+        allow read, write: if isAuth();
+
+        match /messages/{messageId} {
+          allow read, write: if isAuth();
+        }
+      }
+    }
+  }
+}
