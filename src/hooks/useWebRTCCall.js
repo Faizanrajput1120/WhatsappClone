@@ -134,7 +134,7 @@ export const useWebRTCCall = (userId, isAdmin = false) => {
       // ENFORCE OUTBOUND CALL RESTRICTIONS:
       // - Admin can call anyone.
       // - Normal user can ONLY call Admins.
-       const snap = await getDoc(doc(db, "users", receiverId));
+       const snap = await getDoc(doc(db, "users", userId));
         const receiverData = snap.data();
         console.log(`User Data by Faizan is ${receiverData}`)
         console.log(receiverData)
@@ -143,6 +143,11 @@ export const useWebRTCCall = (userId, isAdmin = false) => {
            toast.error("Normal users can only call admins.");
           return 
         }
+        if(receiverData.role !== 'admin') {
+          toast.error("Normal users can only call admins.");
+          return;
+        }
+      
       if (!isAdmin) {
         const snap = await getDoc(doc(db, "users", receiverId));
         const receiverData = snap.data();
