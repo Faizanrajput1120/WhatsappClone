@@ -138,6 +138,7 @@ export const useWebRTCCall = (userId, isAdmin = false) => {
         const receiverData = snap.data();
         console.log(`User Data by Faizan is ${receiverData}`)
         console.log(receiverData)
+        console.log(userId)
         if(!receiverData.role){
            toast.error("Normal users can only call admins.");
           return 
